@@ -23,11 +23,12 @@ class ProcessPhotos(object):
     '''
 
 
-    def __init__(self, mainFrame):
+    def __init__(self, main, fileHandler):
         '''
         Constructor
         '''
-        self.parentFrame = mainFrame
+        self.main = main
+        self.fileHandler = fileHandler
         
         
     def takePic(self, widget, child):
@@ -37,16 +38,16 @@ class ProcessPhotos(object):
         time.sleep(3)
         print 'mode switched to auto'
         print 'snapping pics'
-        widget.status.set_label('Taking Pictures')
+        self.main.statusBar.push(0, 'Taking Pictures')
         #take 4 pictures; hardcoded for speed
-        child.sendline('lua shoot();shoot();shoot();shoot();shoot();shoot();')
+        child.sendline('lua shoot();shoot();')
 
-        #need to pause because camera execution is not accounted for
-        for i in range(5):
-            widget.progressbar.set_fraction(i * .25 + .25)
+#        #need to pause because camera execution is not accounted for
+        for i in range(3):
+#            widget.progressbar.set_fraction(i * .25 + .25)
             while gtk.events_pending():
                         gtk.main_iteration()
-            time.sleep(10)
+            time.sleep(5)
 
         child.expect('<conn>')
         child.sendline('quit')
@@ -58,29 +59,30 @@ class ProcessPhotos(object):
         print 'displaying images'
         self.image1.set_from_file("temp1.jpg")
         self.image2.set_from_file("temp2.jpg")
-        self.image3.set_from_file("temp3.jpg")
-        self.image4.set_from_file("temp4.jpg")
- #       self.image5.set_from_file("temp5.jpg")
- #       self.image6.set_from_file("temp6.jpg")
+#       self.image3.set_from_file("temp3.jpg")
+#       self.image4.set_from_file("temp4.jpg")
+#       self.image5.set_from_file("temp5.jpg")
+#       self.image6.set_from_file("temp6.jpg")
         self.imageStrip.set_from_file("print.jpg")
         
 
     def onPicClick(self, widget):
-        widget = self.parentFrame
+        widget = self.main
         #widget.progressbar.set_fraction(.25)
-        widget.status.set_label('Starting')
+#        widget.status.set_label('Starting')
         while gtk.events_pending():
             gtk.main_iteration()
         child = widget.reconnectCamera()
         self.takePic(widget, child)
-        widget.dumpCameraFiles()
-        widget.createFavor()
-        widget.renameMoveFiles()
-        self.displayImages()
-        widget.status.set_label('Done')
-        widget.progressbar.set_fraction(1)
+        self.fileHandler.dumpCameraFiles()
+        self.fileHandler.createOperativeFavor2()
+#        self.fileHandler.renameMoveFiles()
+#        self.displayImages()
+        widget.statusBar.push(0, 'Done')
+#        widget.progressbar.set_fraction(1)
         while gtk.events_pending():
             gtk.main_iteration()
+            
         #self.resetDisplay()
         
     def onPrintClick(self, widget):
