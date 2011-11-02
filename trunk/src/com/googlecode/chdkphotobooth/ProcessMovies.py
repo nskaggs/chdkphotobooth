@@ -25,12 +25,13 @@ class ProcessMovies(object):
     '''
 
 
-    def __init__(self, mainFrame):
+    def __init__(self, main, fileHandler):
         '''
         Constructor
         '''
         super(ProcessMovies, self).__init__()
-        self.parentFrame = mainFrame
+        self.main = main
+        self.fileHandler = fileHandler
         
 
     def startVid(self, child):
